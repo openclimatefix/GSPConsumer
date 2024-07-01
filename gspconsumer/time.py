@@ -1,4 +1,5 @@
 """ Time helper functions """
+
 import logging
 from datetime import datetime, timezone
 
