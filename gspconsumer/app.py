@@ -13,6 +13,7 @@ from typing import List, Optional
 
 import click
 import pandas as pd
+import sentry_sdk
 from nowcasting_datamodel.connection import DatabaseConnection
 from nowcasting_datamodel.models.base import Base_Forecast
 from nowcasting_datamodel.models.gsp import GSPYield, GSPYieldSQL, LocationSQL
@@ -23,6 +24,35 @@ import gspconsumer
 from gspconsumer.backup import make_gsp_yields_from_national
 from gspconsumer.gsps import filter_gsps_which_have_new_data, get_gsps
 from gspconsumer.time import check_uk_london_hour
+
+
+def traces_sampler(sampling_context):
+    """
+    Filter tracing for sentry logs.
+
+    Examine provided context data (including parent decision, if any)
+    along with anything in the global namespace to compute the sample rate
+    or sampling decision for this transaction
+    """
+
+    if os.getenv("ENVIRONMENT") == "local":
+        return 0.0
+    elif "error" in sampling_context["transaction_context"]["name"]:
+        # These are important - take a big sample
+        return 1.0
+    elif sampling_context["parent_sampled"] is True:
+        # These aren't something worth tracking - drop all transactions like this
+        return 0.0
+    else:
+        # Default sample rate
+        return 0.05
+
+
+sentry_sdk.init(
+    dsn=os.getenv("SENTRY_DSN"),
+    environment=os.getenv("ENVIRONMENT", "local"),
+    traces_sampler=traces_sampler,
+)
 
 logging.basicConfig(
     level=getattr(logging, os.getenv("LOGLEVEL", "DEBUG")),

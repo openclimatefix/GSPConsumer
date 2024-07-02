@@ -1,3 +1,4 @@
+sentry_sdk
 numpy>=2
 pydantic>=2
 pandas
