@@ -1,4 +1,5 @@
 """ GSP functions """
+
 import logging
 from datetime import datetime, timedelta, timezone
 from typing import List, Optional

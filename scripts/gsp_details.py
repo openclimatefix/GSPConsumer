@@ -7,7 +7,6 @@ Update database with gsp details
 4. update database
 """
 
-
 import json
 from datetime import datetime, timezone
 
