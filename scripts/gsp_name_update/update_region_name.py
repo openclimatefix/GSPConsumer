@@ -5,7 +5,6 @@ Update database with gsp region
 2. update database
 """
 
-
 import json
 import os.path
 
